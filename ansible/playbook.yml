@@ -1,0 +1,63 @@
+---
+- name: Setup NGINX and PHP on Amazon Linux
+  hosts: web_servers
+  become: true
+  tasks:
+    - name: Enable nginx1 and php7.4
+      command: amazon-linux-extras enable nginx1 php7.4
+
+    - name: Install nginx, PHP, and EPEL
+      command: amazon-linux-extras install -y nginx1 php7.4 epel
+
+    - name: Install PHP-XML and Unzip
+      yum:
+        name:
+          - php-xml
+          - unzip
+        state: present
+
+    - name: Download and install Composer
+      get_url:
+        url: https://getcomposer.org/download/2.1.0/composer.phar
+        dest: /usr/local/bin/composer
+        mode: '0755'
+
+    - name: Ensure /var/www/service directory exists
+      file:
+        path: /var/www/service
+        state: directory
+
+    - name: Create symbolic link for service
+      file:
+        src: /var/www/service
+        dest: /usr/share/nginx/html/service
+        state: link
+
+    - name: Add PHP info page
+      copy:
+        dest: /var/www/service/index.php
+        content: |
+          <?php
+          phpinfo();
+        mode: '0644'
+
+    - name: Configure NGINX for PHP processing
+      copy:
+        dest: /etc/nginx/default.d/php.conf
+        content: |
+          location ~* \.php$ {
+              try_files $uri =404;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              include fastcgi_params;
+              fastcgi_index  index.php;
+              fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+              fastcgi_intercept_errors on;
+              fastcgi_pass   unix:/run/php-fpm/www.sock;
+          }
+        mode: '0644'
+
+    - name: Start NGINX service
+      service:
+        name: nginx
+        state: started
+        enabled: true
