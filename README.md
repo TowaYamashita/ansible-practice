@@ -25,3 +25,6 @@ server                     : ok=0    changed=0    unreachable=1    failed=0    s
 - ansible/inventory.ini の ansible_ssh_private_key_file に秘密鍵の名前で「sandbox-us-east.pem」を置き換える
 - `docker image build --tag my-ansible:$(date '+%s') .` を実行する
 - `docker container run <先ほど作成したイメージのタグ>` を実行する
+
+# 補足
+- install.sh はこの Ansible Plybook でやってる処理と同じ処理を行うシェルスクリプトです。
