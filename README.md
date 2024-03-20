@@ -18,7 +18,10 @@ server                     : ok=0    changed=0    unreachable=1    failed=0    s
 
 # Usage 
 - AMIとしてAmazonLinux2を指定してEC2インスタンスを立ち上げる
-- .ssh ディレクトリ配下に EC2インスタンス作成時に設定した公開鍵と対になる秘密鍵を置く
+- 立ち上げたEC2インスタンスにSSHで接続する
+- .ssh ディレクトリ配下に EC2インスタンス作成時に設定した公開鍵と対になる秘密鍵をコピーする
+- .ssh ディレクトリ配下に ~/.ssh/known_hosts をコピーする
 - ansible/inventory.ini の ansible_host に立ち上げたEC2インスタンスのパブリックIPアドレスを書く
+- ansible/inventory.ini の ansible_ssh_private_key_file に秘密鍵の名前で「sandbox-us-east.pem」を置き換える
 - `docker image build --tag my-ansible:$(date '+%s') .` を実行する
 - `docker container run <先ほど作成したイメージのタグ>` を実行する
